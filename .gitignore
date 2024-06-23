@@ -2,6 +2,10 @@
 .gradle/
 build/
 
+
+# API keys file
+apikey.properties
+
 # Local configuration file (sdk path, etc)
 local.properties
 
