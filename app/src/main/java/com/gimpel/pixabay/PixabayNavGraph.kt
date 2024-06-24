@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.gimpel.pixabay.list.SearchScreen
 
 @Composable
 fun PixabayNavGraph(
@@ -22,28 +23,15 @@ fun PixabayNavGraph(
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier
+        modifier = modifier,
     ) {
         composable(
             PixabayDestinations.SEARCH_ROUTE,
         ) {
-            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                Column(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    Text(
-                        text = "List Screen",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                    Button(onClick = { navController.navigate(PixabayDestinations.DETAIL_ROUTE)}) {
-                        Text(
-                            text = "Go to Detail Screen",
-                        )
-                    }
-                }
-            }
+            SearchScreen(
+                modifier = modifier,
+                onItemClick = { navController.navigate(PixabayDestinations.DETAIL_ROUTE) }
+            )
         }
         composable(
             PixabayDestinations.DETAIL_ROUTE,

@@ -1,9 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kapt)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
+
+val apikeyPropertiesFile = rootProject.file("apikey.properties")
+val apiKeyProperties = Properties().apply {
+    load(apikeyPropertiesFile.inputStream())
+}
+
+android.buildFeatures.buildConfig = true
 
 android {
     namespace = "com.gimpel.pixabay"
@@ -20,6 +30,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "PIXABAY_API_KEY", apiKeyProperties.getProperty("pixabay.api.key"))
+        buildConfigField("String", "PIXABAY_API_URL", "\"https://pixabay.com/\"")
     }
 
     buildTypes {
@@ -65,6 +78,11 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
+
+    implementation(libs.retrofit)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.converter.kotlinx.serialization)
+    implementation(libs.okhttp.logging)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
