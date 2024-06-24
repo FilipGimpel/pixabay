@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.converter.kotlinx.serialization)
     implementation(libs.okhttp.logging)
 
+    implementation(libs.coil.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
