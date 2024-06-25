@@ -3,8 +3,8 @@ package com.gimpel.pixabay.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gimpel.pixabay.data.ImagesRepository
 import com.gimpel.pixabay.data.network.Hit
-import com.gimpel.pixabay.data.network.PixabayService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,16 +14,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val pixabayService: PixabayService,
-    private val savedStateHandle: SavedStateHandle
+    private val imagesRepository: ImagesRepository, private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val mutableUiState = MutableStateFlow(UiState())
     val uiState = mutableUiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            pixabayService.get("fruit").let { response ->
-                mutableUiState.update { it.copy(items = response.hits) }
+            imagesRepository.getHits(listOf("fruit")).let { hits ->
+                mutableUiState.update { it.copy(items = hits) }
             }
         }
     }
