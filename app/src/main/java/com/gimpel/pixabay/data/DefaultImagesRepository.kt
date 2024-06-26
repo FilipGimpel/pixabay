@@ -1,6 +1,5 @@
 package com.gimpel.pixabay.data
 
-import android.util.Log
 import com.gimpel.pixabay.data.local.LocalHit
 import com.gimpel.pixabay.data.local.PixabayDao
 import com.gimpel.pixabay.data.network.Hit
@@ -14,10 +13,10 @@ class DefaultImagesRepository @Inject constructor(
     private val localDataSource: PixabayDao
 ) : ImagesRepository {
     override suspend fun getHits(tags: List<String>): Result<List<Hit>> {
-        var localHits = getHitsWithAllTags(tags)
+        var hits = getHitsWithAllTags(tags).toHit()
 
         // If local data is empty, fetch from network
-        if (localHits.isEmpty()) {
+        if (hits.isEmpty()) {
             val result = networkDataSource.get(tags.joinToString(","))
 
             // If network request fails, return error
@@ -25,21 +24,16 @@ class DefaultImagesRepository @Inject constructor(
                 return Result.failure(result.exceptionOrNull()!!)
             } else {
                 // Convert network hits to local hits
-                localHits = result.getOrNull()!!.hits.toLocal()
+                hits = result.getOrNull()!!.hits
 
                 // Insert hits into local database
-                localDataSource.insertAll(localHits)
+                localDataSource.insertAll(hits.toLocal())
             }
         }
 
-        // Convert local hits to network hits and return
-        return Result.success(localHits.toNetwork())
+        return Result.success(hits)
     }
 
-    /**
-     * I fully realise its not the right way to do it but for a showcase app it's fine.
-     * I'm more than happy to discuss the right way to do it.
-     */
     private suspend fun getHitsWithAllTags(tags: List<String>): List<LocalHit> {
         // Get all hits from the database
         val allHits = localDataSource.getAllHits()
@@ -56,6 +50,6 @@ class DefaultImagesRepository @Inject constructor(
     }
 
     override suspend fun getHit(id: Int): Hit {
-        return localDataSource.getHit(id).toNetwork()
+        return localDataSource.getHit(id).toHit()
     }
 }

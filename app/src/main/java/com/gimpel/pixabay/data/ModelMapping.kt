@@ -16,7 +16,7 @@ fun Hit.toLocal(): LocalHit {
     )
 }
 
-fun LocalHit.toNetwork(): Hit {
+fun LocalHit.toHit(): Hit {
     return Hit(
         id = this.id,
         previewURL = this.previewURL,
@@ -33,7 +33,7 @@ fun LocalHit.toNetwork(): Hit {
 // Without this, type erasure will cause compiler errors because these methods will have the same
 // signature on the JVM.
 @JvmName("localToExternal")
-fun List<LocalHit>.toNetwork() = map(LocalHit::toNetwork)
+fun List<LocalHit>.toHit() = map(LocalHit::toHit)
 
 @JvmName("externalToLocal")
 fun List<Hit>.toLocal() = map(Hit::toLocal)
