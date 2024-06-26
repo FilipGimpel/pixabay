@@ -1,6 +1,5 @@
 package com.gimpel.pixabay.list
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gimpel.pixabay.data.ImagesRepository
@@ -27,13 +26,14 @@ class SearchViewModel @Inject constructor(
             .collect { query ->
                 if (query.isNotEmpty()) {
                     var currentUiState = mutableUiState.value
-                    mutableUiState.value = currentUiState.copy(isLoading = true)
+                    mutableUiState.value = currentUiState.copy(isLoading = true, isError = false)
 
                     imagesRepository.getHits(listOf(query)).let { hits ->
                         currentUiState = mutableUiState.value
 
                         if (hits.isSuccess) {
-                            mutableUiState.value = currentUiState.copy(items = hits.getOrNull()!!, isLoading = false)
+                            mutableUiState.value = currentUiState.copy(items = hits.getOrNull()!!, isLoading = false,
+                                isError = false)
                         } else {
                             mutableUiState.value = currentUiState.copy(isError = true, isLoading = false)
                         }
