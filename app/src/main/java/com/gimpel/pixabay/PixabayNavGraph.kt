@@ -27,16 +27,16 @@ fun PixabayNavGraph(
         composable(
             PixabayDestinations.SEARCH_ROUTE,
         ) {
-            SearchScreen(modifier = modifier,
-                onItemClick = { id -> navController.navigate("$DETAIL_SCREEN/$id") })
+            SearchScreen(
+                modifier = modifier,
+                onItemClick = { id -> navController.navigate("$DETAIL_SCREEN/$id") }
+            )
         }
         composable(
             PixabayDestinations.DETAIL_ROUTE,
             arguments = listOf(navArgument(DETAIL_ID_ARG) { type = NavType.IntType })
         ) {
-            DetailScreen(
-                modifier = modifier,
-            )
+            DetailScreen()
         }
     }
 }

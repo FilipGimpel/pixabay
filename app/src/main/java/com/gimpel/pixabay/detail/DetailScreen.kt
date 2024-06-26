@@ -24,7 +24,6 @@ import com.gimpel.pixabay.data.network.Hit
 
 @Composable
 fun DetailScreen(
-    modifier: Modifier = Modifier,
     viewModel: DetailViewModel = hiltViewModel()
 ) {
 

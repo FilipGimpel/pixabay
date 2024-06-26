@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val imagesRepository: ImagesRepository, private val savedStateHandle: SavedStateHandle
+    private val imagesRepository: ImagesRepository,
 ) : ViewModel() {
     private val mutableUiState = MutableStateFlow(UiState())
     val uiState = mutableUiState.asStateFlow()
@@ -23,20 +23,23 @@ class SearchViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             uiState.map { it.query }
-                .distinctUntilChanged()
-                .collect { query ->
-                    if (query.isNotEmpty()) {
-                        imagesRepository.getHits(listOf(query)).let { hits ->
-                            val currentUiState = mutableUiState.value
+            .distinctUntilChanged()
+            .collect { query ->
+                if (query.isNotEmpty()) {
+                    var currentUiState = mutableUiState.value
+                    mutableUiState.value = currentUiState.copy(isLoading = true)
 
-                            if (hits.isSuccess) {
-                                mutableUiState.value = currentUiState.copy(items = hits.getOrNull()!!)
-                            } else {
-                                mutableUiState.value = currentUiState.copy(isError = true)
-                            }
+                    imagesRepository.getHits(listOf(query)).let { hits ->
+                        currentUiState = mutableUiState.value
+
+                        if (hits.isSuccess) {
+                            mutableUiState.value = currentUiState.copy(items = hits.getOrNull()!!, isLoading = false)
+                        } else {
+                            mutableUiState.value = currentUiState.copy(isError = true, isLoading = false)
                         }
                     }
                 }
+            }
         }
     }
 
