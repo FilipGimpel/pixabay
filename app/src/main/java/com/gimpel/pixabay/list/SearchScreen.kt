@@ -141,7 +141,7 @@ fun SearchResultItem(hit: Hit, onItemClick: () -> Unit) {
                 .align(Alignment.CenterVertically)
         ) {
             Text(text = hit.user, fontWeight = FontWeight.Bold)
-            Text(text = hit.tags)
+            Text(text = hit.tags.joinToString(separator = ", "))
         }
     }
 }

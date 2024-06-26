@@ -1,5 +1,6 @@
 package com.gimpel.pixabay.data
 
+import android.util.Log
 import com.gimpel.pixabay.data.local.LocalHit
 import com.gimpel.pixabay.data.local.PixabayDao
 import com.gimpel.pixabay.data.network.Hit
