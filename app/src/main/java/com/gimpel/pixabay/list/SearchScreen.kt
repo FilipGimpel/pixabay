@@ -16,6 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,8 +34,9 @@ import com.gimpel.pixabay.data.network.Hit
 fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
-    onItemClick: () -> Unit
+    onItemClick: (Int) -> Unit
 ) {
+    var clickedItemId by rememberSaveable { mutableStateOf<Int?>(null) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -45,7 +49,10 @@ fun SearchScreen(
                 uiState.items.forEach { hit ->
                     item(key = hit.id) {
                         SearchResultItem(
-                            hit = hit, onItemClick = { viewModel.showDialog() }
+                            hit = hit, onItemClick = {
+                                clickedItemId = hit.id
+                                viewModel.showDialog()
+                            }
                         )
                     }
                 }
@@ -57,7 +64,10 @@ fun SearchScreen(
                     title = { Text(text = "Dialog Title") },
                     text = { Text(text = "Dialog Text") },
                     confirmButton = {
-                        TextButton(onClick = { viewModel.hideDialog() }) {
+                        TextButton(onClick = {
+                            viewModel.hideDialog()
+                            clickedItemId?.let { id -> onItemClick(id) }
+                        }) {
                             Text(text = "Confirm")
                         }
                     },

@@ -4,7 +4,7 @@ import com.gimpel.pixabay.PixabayDestinationsArgs.DETAIL_ID_ARG
 import com.gimpel.pixabay.PixabayScreens.DETAIL_SCREEN
 import com.gimpel.pixabay.PixabayScreens.SEARCH_SCREEN
 
-private object PixabayScreens {
+object PixabayScreens {
     const val SEARCH_SCREEN = "list"
     const val DETAIL_SCREEN = "detail"
 }

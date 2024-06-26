@@ -29,4 +29,8 @@ class DefaultImagesRepository @Inject constructor(
         // Convert local hits to network hits and return
         return localHits.toNetwork()
     }
+
+    override suspend fun getHit(id: Int): Hit {
+        return localDataSource.getHit(id).toNetwork()
+    }
 }
