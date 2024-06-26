@@ -6,5 +6,5 @@ import retrofit2.http.Query
 
 interface PixabayService {
     @GET("api")
-    suspend fun get(@Query("q") searchQuery: String?): PixabayResponse
+    suspend fun get(@Query("q") searchQuery: String?): Result<PixabayResponse>
 }

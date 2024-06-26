@@ -11,23 +11,28 @@ class DefaultImagesRepository @Inject constructor(
     private val networkDataSource: PixabayService,
     private val localDataSource: PixabayDao
 ) : ImagesRepository {
-    override suspend fun getHits(tags: List<String>): List<Hit> {
+    override suspend fun getHits(tags: List<String>): Result<List<Hit>> {
         // Get hits from local database
         var localHits = localDataSource.getHits(tags)
 
         // If local data is empty, fetch from network
         if (localHits.isEmpty()) {
-            val hits = networkDataSource.get(tags.joinToString(",")).hits
+            val result = networkDataSource.get(tags.joinToString(","))
 
-            // Convert network hits to local hits
-            localHits = hits.toLocal()
+            // If network request fails, return error
+            if (result.isFailure) {
+                return Result.failure(result.exceptionOrNull()!!)
+            } else {
+                // Convert network hits to local hits
+                localHits = result.getOrNull()!!.hits.toLocal()
 
-            // Insert hits into local database
-            localDataSource.insertAll(localHits)
+                // Insert hits into local database
+                localDataSource.insertAll(localHits)
+            }
         }
 
         // Convert local hits to network hits and return
-        return localHits.toNetwork()
+        return Result.success(localHits.toNetwork())
     }
 
     override suspend fun getHit(id: Int): Hit {

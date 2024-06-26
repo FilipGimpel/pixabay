@@ -14,6 +14,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,38 +46,50 @@ fun SearchScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            LazyColumn {
-                uiState.items.forEach { hit ->
-                    item(key = hit.id) {
-                        SearchResultItem(
-                            hit = hit, onItemClick = {
-                                clickedItemId = hit.id
-                                viewModel.showDialog()
-                            }
-                        )
+            TextField(
+                value = uiState.query,
+                onValueChange = { newQuery -> viewModel.updateQuery(newQuery) },
+                label = { Text("Search") }
+            )
+
+            if (uiState.isError) {
+                Text(text = "An error occurred")
+            } else if (uiState.isLoading) {
+                Text(text = "Loading...")
+            } else {
+                LazyColumn {
+                    uiState.items.forEach { hit ->
+                        item(key = hit.id) {
+                            SearchResultItem(
+                                hit = hit, onItemClick = {
+                                    clickedItemId = hit.id
+                                    viewModel.showDialog()
+                                }
+                            )
+                        }
                     }
                 }
-            }
 
-            if (uiState.showDialog) {
-                AlertDialog(
-                    onDismissRequest = { viewModel.hideDialog() },
-                    title = { Text(text = "Dialog Title") },
-                    text = { Text(text = "Dialog Text") },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            viewModel.hideDialog()
-                            clickedItemId?.let { id -> onItemClick(id) }
-                        }) {
-                            Text(text = "Confirm")
+                if (uiState.showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { viewModel.hideDialog() },
+                        title = { Text(text = "Dialog Title") },
+                        text = { Text(text = "Dialog Text") },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.hideDialog()
+                                clickedItemId?.let { id -> onItemClick(id) }
+                            }) {
+                                Text(text = "Confirm")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { viewModel.hideDialog() }) {
+                                Text(text = "Dismiss")
+                            }
                         }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { viewModel.hideDialog() }) {
-                            Text(text = "Dismiss")
-                        }
-                    }
-                )
+                    )
+                }
             }
         }
     }

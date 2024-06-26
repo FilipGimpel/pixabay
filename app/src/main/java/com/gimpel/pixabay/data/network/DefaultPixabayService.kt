@@ -1,6 +1,7 @@
 package com.gimpel.pixabay.data.network
 
 import com.gimpel.pixabay.BuildConfig
+import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -40,10 +41,11 @@ class DefaultPixabayService @Inject constructor(
         .baseUrl(BuildConfig.PIXABAY_API_URL)
         .client(client)
         .addConverterFactory(converterFactory)
+        .addCallAdapterFactory(ResultCallAdapterFactory.create())
         .build()
         .create(PixabayService::class.java)
 
-    override suspend fun get(searchQuery: String?): PixabayResponse {
+    override suspend fun get(searchQuery: String?): Result<PixabayResponse> {
         return pixabayApi.get(searchQuery)
     }
 }

@@ -8,7 +8,8 @@ import com.gimpel.pixabay.data.network.Hit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,9 +22,21 @@ class SearchViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            imagesRepository.getHits(listOf("fruit")).let { hits ->
-                mutableUiState.update { it.copy(items = hits) }
-            }
+            uiState.map { it.query }
+                .distinctUntilChanged()
+                .collect { query ->
+                    if (query.isNotEmpty()) {
+                        imagesRepository.getHits(listOf(query)).let { hits ->
+                            val currentUiState = mutableUiState.value
+
+                            if (hits.isSuccess) {
+                                mutableUiState.value = currentUiState.copy(items = hits.getOrNull()!!)
+                            } else {
+                                mutableUiState.value = currentUiState.copy(isError = true)
+                            }
+                        }
+                    }
+                }
         }
     }
 
@@ -37,8 +50,14 @@ class SearchViewModel @Inject constructor(
         mutableUiState.value = current.copy(showDialog = false)
     }
 
+    fun updateQuery(newQuery: String) {
+        val current = mutableUiState.value
+        mutableUiState.value = current.copy(query = newQuery)
+    }
+
     data class UiState(
         val isLoading: Boolean = false,
+        val isError: Boolean = false,
         val showDialog: Boolean = false,
         val query: String = "",
         val items: List<Hit> = emptyList(),

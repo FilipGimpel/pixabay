@@ -16,6 +16,7 @@ navigation = "2.7.7"
 retrofit = "2.9.0"
 androidxHiltNavigationCompose = "1.2.0"
 kotlinxSerializationJson = "1.6.3"
+retrofitAdaptersResult = "1.0.11"
 roomKtx = "2.6.1"
 ksp = "1.9.0-1.0.13"
 
@@ -54,6 +55,7 @@ okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor",
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomKtx" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomKtx" }
+retrofit-adapters-result = { module = "com.github.skydoves:retrofit-adapters-result", version.ref = "retrofitAdaptersResult" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
