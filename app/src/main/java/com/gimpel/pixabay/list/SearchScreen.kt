@@ -31,7 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.gimpel.pixabay.R
-import com.gimpel.pixabay.data.network.Hit
+import com.gimpel.pixabay.data.network.HitDTO
 
 
 @Composable
@@ -122,7 +122,7 @@ fun TextLabel(text: String) {
 }
 
 @Composable
-fun SearchResultItem(hit: Hit, onItemClick: () -> Unit) {
+fun SearchResultItem(hit: HitDTO, onItemClick: () -> Unit) {
     Row(
         modifier = Modifier
             .clickable(enabled = true, onClick = onItemClick)

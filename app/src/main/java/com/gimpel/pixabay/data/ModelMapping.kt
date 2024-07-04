@@ -1,14 +1,14 @@
 package com.gimpel.pixabay.data
 
-import com.gimpel.pixabay.data.local.LocalHit
-import com.gimpel.pixabay.data.network.Hit
+import com.gimpel.pixabay.data.local.HitEntity
+import com.gimpel.pixabay.data.network.HitDTO
 
-fun Hit.toLocal(): LocalHit {
-    return LocalHit(
-        id = this.id,
+fun HitDTO.toEntity(): HitEntity {
+    return HitEntity(
+        hitId = this.id,
         previewURL = this.previewURL,
         user = this.user,
-        tags = this.tags,
+        tags = this.tags.joinToString(","),
         largeImageURL = this.largeImageURL,
         likes = this.likes,
         downloads = this.downloads,
@@ -16,12 +16,13 @@ fun Hit.toLocal(): LocalHit {
     )
 }
 
-fun LocalHit.toHit(): Hit {
-    return Hit(
-        id = this.id,
+fun HitEntity.toDTO(): HitDTO {
+    return HitDTO(
+        id = this.hitId,
         previewURL = this.previewURL,
         user = this.user,
-        tags = this.tags,
+        //tags = this.tags,TODO FIXME
+        tags = this.tags.split(",").map { it.trim() },
         largeImageURL = this.largeImageURL,
         likes = this.likes,
         downloads = this.downloads,
@@ -33,7 +34,7 @@ fun LocalHit.toHit(): Hit {
 // Without this, type erasure will cause compiler errors because these methods will have the same
 // signature on the JVM.
 @JvmName("localToExternal")
-fun List<LocalHit>.toHit() = map(LocalHit::toHit)
+fun List<HitEntity>.toDTO() = map(HitEntity::toDTO)
 
 @JvmName("externalToLocal")
-fun List<Hit>.toLocal() = map(Hit::toLocal)
+fun List<HitDTO>.toEntity() = map(HitDTO::toEntity)

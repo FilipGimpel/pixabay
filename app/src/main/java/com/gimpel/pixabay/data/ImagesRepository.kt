@@ -1,8 +1,8 @@
 package com.gimpel.pixabay.data
 
-import com.gimpel.pixabay.data.network.Hit
+import com.gimpel.pixabay.data.network.HitDTO
 
 interface ImagesRepository {
-    suspend fun getHits(tags: List<String>): Result<List<Hit>>
-    suspend fun getHit(id: Int): Hit
+    suspend fun getHits(query: String): Result<List<HitDTO>>
+    suspend fun getHit(id: Int): HitDTO
 }

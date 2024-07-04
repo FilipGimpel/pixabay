@@ -1,8 +1,9 @@
 package com.gimpel.pixabay.data
 
-import com.gimpel.pixabay.data.local.LocalHit
+import com.gimpel.pixabay.data.local.HitEntity
 import com.gimpel.pixabay.data.local.PixabayDao
-import com.gimpel.pixabay.data.network.Hit
+import com.gimpel.pixabay.data.local.QueryWithHitEntity
+import com.gimpel.pixabay.data.network.HitDTO
 import com.gimpel.pixabay.data.network.PixabayService
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,12 +13,12 @@ class DefaultImagesRepository @Inject constructor(
     private val networkDataSource: PixabayService,
     private val localDataSource: PixabayDao
 ) : ImagesRepository {
-    override suspend fun getHits(tags: List<String>): Result<List<Hit>> {
-        var hits = getHitsWithAllTags(tags).toHit()
+    override suspend fun getHits(query: String): Result<List<HitDTO>> {
+        var hits = getHitsForQuery(query).toDTO()
 
         // If local data is empty, fetch from network
         if (hits.isEmpty()) {
-            val result = networkDataSource.get(tags.joinToString(","))
+            val result = networkDataSource.get(query)
 
             // If network request fails, return error
             if (result.isFailure) {
@@ -27,29 +28,28 @@ class DefaultImagesRepository @Inject constructor(
                 hits = result.getOrNull()!!.hits
 
                 // Insert hits into local database
-                localDataSource.insertAll(hits.toLocal())
+                insertAll(hits, query)
             }
         }
 
-        return Result.success(hits)
+        return Result.success(hits.sortedBy { it.id })
     }
 
-    private suspend fun getHitsWithAllTags(tags: List<String>): List<LocalHit> {
-        // Get all hits from the database
-        val allHits = localDataSource.getAllHits()
-
-        // Filter hits that contain all tags
-        val hitsWithAllTags = allHits.filter { hit ->
-            tags.all { tag ->
-                // any tag starts with the given tag
-                hit.tags.any { it.startsWith(tag) }
-            }
+    private suspend fun insertAll(hits: List<HitDTO>, query: String) {
+        var hitEntities = hits.map { it.toEntity() }
+        var hitWithTagEntities = hits.map { hit ->
+            QueryWithHitEntity(hitId = hit.id, query = query)
         }
 
-        return hitsWithAllTags
+        // Insert hits into local database
+        localDataSource.insertAll(hitEntities)
+        localDataSource.insertQueryWithHit(hitWithTagEntities)
     }
 
-    override suspend fun getHit(id: Int): Hit {
-        return localDataSource.getHit(id).toHit()
+    private suspend fun getHitsForQuery(query : String): List<HitEntity> {
+        return localDataSource.getHitsForQuery(query)
+    }
+    override suspend fun getHit(id: Int): HitDTO {
+        return localDataSource.getHit(id).toDTO()
     }
 }

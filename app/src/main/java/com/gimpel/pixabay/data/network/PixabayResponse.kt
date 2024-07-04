@@ -12,11 +12,11 @@ import kotlinx.serialization.encoding.Encoder
 data class PixabayResponse (
     val total: Int,
     val totalHits: Int,
-    val hits: List<Hit>
+    val hits: List<HitDTO>
 )
 
 @Serializable
-data class Hit(
+data class HitDTO(
     val id: Int,
     val previewURL: String,
     val user: String,
