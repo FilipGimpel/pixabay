@@ -3,7 +3,7 @@ package com.gimpel.pixabay.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gimpel.pixabay.data.ImagesRepository
-import com.gimpel.pixabay.data.network.HitDTO
+import com.gimpel.pixabay.model.Hit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +28,7 @@ class SearchViewModel @Inject constructor(
             .debounce(500)
             .distinctUntilChanged()
             .collect { query ->
-                if (query.isNotEmpty()) {
+                if (query.trim().isNotEmpty()) {
                     var currentUiState = mutableUiState.value
                     mutableUiState.value = currentUiState.copy(isLoading = true, isError = false)
 
@@ -67,6 +67,6 @@ class SearchViewModel @Inject constructor(
         val isError: Boolean = false,
         val showDialog: Boolean = false,
         val query: String = "",
-        val items: List<HitDTO> = emptyList(),
+        val items: List<Hit> = emptyList(),
     )
 }

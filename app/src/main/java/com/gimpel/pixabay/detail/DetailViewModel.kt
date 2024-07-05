@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gimpel.pixabay.PixabayDestinationsArgs.DETAIL_ID_ARG
 import com.gimpel.pixabay.data.ImagesRepository
-import com.gimpel.pixabay.data.network.HitDTO
+import com.gimpel.pixabay.model.Hit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +31,6 @@ class DetailViewModel @Inject constructor(
     // todo use sealed class and create states for loading, error, success
     data class UiState(
         val isLoading: Boolean = false,
-        val hit: HitDTO? = null
+        val hit: Hit? = null
     )
 }

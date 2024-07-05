@@ -1,10 +1,12 @@
 package com.gimpel.pixabay.data
 
-import com.gimpel.pixabay.data.local.HitEntity
+import com.gimpel.pixabay.data.local.HitAndTagCrossRef
 import com.gimpel.pixabay.data.local.PixabayDao
 import com.gimpel.pixabay.data.local.SearchQueryWithHitEntity
+import com.gimpel.pixabay.data.local.TagEntity
 import com.gimpel.pixabay.data.network.HitDTO
 import com.gimpel.pixabay.data.network.PixabayService
+import com.gimpel.pixabay.model.Hit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,22 +15,25 @@ class DefaultImagesRepository @Inject constructor(
     private val networkDataSource: PixabayService,
     private val localDataSource: PixabayDao
 ) : ImagesRepository {
-    override suspend fun getHits(query: String): Result<List<HitDTO>> {
-        var hits = getHitsForQuery(query).toDTO()
+    override suspend fun getHits(query: String): Result<List<Hit>> {
+        var hits = localDataSource.getHitsWithTagsForQuery(query).toHit()
 
         // If local data is empty, fetch from network
         if (hits.isEmpty()) {
-            val result = networkDataSource.get(query)
+            val networkResult = networkDataSource.get(query)
 
             // If network request fails, return error
-            if (result.isFailure) {
-                return Result.failure(result.exceptionOrNull()!!)
+            if (networkResult.isFailure) {
+                return Result.failure(networkResult.exceptionOrNull()!!)
             } else {
                 // Convert network hits to local hits
-                hits = result.getOrNull()!!.hits
+                val networkHits = networkResult.getOrNull()!!.hits
 
                 // Insert hits into local database
-                insertAll(hits, query)
+                insertAll(networkHits, query)
+
+                // Convert network hits to model
+                hits = networkHits.map { it.toModel() }
             }
         }
 
@@ -36,20 +41,28 @@ class DefaultImagesRepository @Inject constructor(
     }
 
     private suspend fun insertAll(hits: List<HitDTO>, query: String) {
+        // Insert Hits
         var hitEntities = hits.map { it.toEntity() }
-        var hitWithTagEntities = hits.map { hit ->
+        localDataSource.insertAll(hitEntities)
+
+        // Insert SearchQueryWithHitEntity
+        // One to many relationship between SearchQuery and Hit
+        var hitWithSearchQueryEntities = hits.map { hit ->
             SearchQueryWithHitEntity(hitId = hit.id, searchQuery = query)
         }
+        localDataSource.insertQueryWithHit(hitWithSearchQueryEntities)
 
-        // Insert hits into local database
-        localDataSource.insertAll(hitEntities)
-        localDataSource.insertQueryWithHit(hitWithTagEntities)
+        // Insert Tags
+        // Many to many relationship between Hit and Tag
+        hits.forEach { hit ->
+            hit.tags.forEach { tag ->
+                localDataSource.insertTag(TagEntity(tag))
+                localDataSource.insertHitAndTag(HitAndTagCrossRef(hitId = hit.id, tagId = tag))
+            }
+        }
     }
 
-    private suspend fun getHitsForQuery(query : String): List<HitEntity> {
-        return localDataSource.getHitsForQuery(query)
-    }
-    override suspend fun getHit(id: Int): HitDTO {
-        return localDataSource.getHit(id).toDTO()
+    override suspend fun getHit(id: Int): Hit {
+        return localDataSource.getHitWithTags(id).toHit()
     }
 }

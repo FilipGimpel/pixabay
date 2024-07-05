@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
-import com.gimpel.pixabay.data.network.HitDTO
+import com.gimpel.pixabay.model.Hit
 
 
 @Composable
@@ -48,7 +48,7 @@ fun DetailScreen(
 }
 
 @Composable
-fun DetailContent(hit: HitDTO) {
+fun DetailContent(hit: Hit) {
     Image(
         painter = rememberAsyncImagePainter(model = hit.largeImageURL),
         contentDescription = "Image thumbnail",
