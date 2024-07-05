@@ -2,8 +2,8 @@ package com.gimpel.pixabay.data.local
 
 import androidx.room.Entity
 
-@Entity(primaryKeys = ["hitId", "query"])
-data class QueryWithHitEntity(
+@Entity(primaryKeys = ["hitId", "searchQuery"])
+data class SearchQueryWithHitEntity(
     val hitId: Int,
-    val query: String
+    val searchQuery: String
 )

@@ -1,10 +1,7 @@
 package com.gimpel.pixabay.data.local
 
 import androidx.room.Dao
-import androidx.room.Embedded
-import androidx.room.Junction
 import androidx.room.Query
-import androidx.room.Relation
 import androidx.room.Upsert
 
 @Dao
@@ -20,13 +17,13 @@ interface PixabayDao {
     suspend fun insertAll(products: List<HitEntity>)
 
     @Upsert
-    suspend fun insertQueryWithHit(tags: List<QueryWithHitEntity>)
+    suspend fun insertQueryWithHit(tags: List<SearchQueryWithHitEntity>)
 
     @Query(
         """
         SELECT * FROM HitEntity 
-        JOIN QueryWithHitEntity ON HitEntity.hitId = QueryWithHitEntity.hitId
-        WHERE QueryWithHitEntity.query = :query
+        JOIN SearchQueryWithHitEntity ON HitEntity.hitId = SearchQueryWithHitEntity.hitId
+        WHERE SearchQueryWithHitEntity.searchQuery = :query
         GROUP BY HitEntity.hitId
     """
     )
