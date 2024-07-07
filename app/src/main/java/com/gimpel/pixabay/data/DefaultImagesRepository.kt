@@ -15,12 +15,12 @@ class DefaultImagesRepository @Inject constructor(
     private val networkDataSource: PixabayService,
     private val localDataSource: PixabayDao
 ) : ImagesRepository {
-    override suspend fun getHits(query: String): Result<List<Hit>> {
-        var hits = localDataSource.getHitsWithTagsForQuery(query).toHit()
+    override suspend fun getHits(query: String, page: Int, perPage: Int): Result<List<Hit>> {
+        var hits = localDataSource.getHitsWithTagsForQuery(query, perPage, (page-1) * perPage).toHit()
 
         // If local data is empty, fetch from network
         if (hits.isEmpty()) {
-            val networkResult = networkDataSource.get(query)
+            val networkResult = networkDataSource.get(query, page, perPage)
 
             // If network request fails, return error
             if (networkResult.isFailure) {
@@ -39,6 +39,7 @@ class DefaultImagesRepository @Inject constructor(
 
         return Result.success(hits.sortedBy { it.id })
     }
+
 
     private suspend fun insertAll(hits: List<HitDTO>, query: String) {
         // Insert Hits

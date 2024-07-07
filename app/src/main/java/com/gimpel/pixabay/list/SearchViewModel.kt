@@ -2,14 +2,18 @@ package com.gimpel.pixabay.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gimpel.pixabay.data.ImagesRepository
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.gimpel.pixabay.data.HitRepository
 import com.gimpel.pixabay.model.Hit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,7 +21,7 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val imagesRepository: ImagesRepository,
+    private val repository: HitRepository
 ) : ViewModel() {
     private val mutableUiState = MutableStateFlow(UiState())
     val uiState = mutableUiState.asStateFlow()
@@ -30,18 +34,7 @@ class SearchViewModel @Inject constructor(
             .collect { query ->
                 if (query.trim().isNotEmpty()) {
                     var currentUiState = mutableUiState.value
-                    mutableUiState.value = currentUiState.copy(isLoading = true, isError = false)
-
-                    imagesRepository.getHits(query).let { hits ->
-                        currentUiState = mutableUiState.value
-
-                        if (hits.isSuccess) {
-                            mutableUiState.value = currentUiState.copy(items = hits.getOrNull()!!, isLoading = false,
-                                isError = false)
-                        } else {
-                            mutableUiState.value = currentUiState.copy(isError = true, isLoading = false)
-                        }
-                    }
+                    mutableUiState.value = currentUiState.copy(itemsPaginatedFlow = repository.getSearchResultStream(query).cachedIn(viewModelScope))
                 }
             }
         }
@@ -63,10 +56,8 @@ class SearchViewModel @Inject constructor(
     }
 
     data class UiState(
-        val isLoading: Boolean = false,
-        val isError: Boolean = false,
         val showDialog: Boolean = false,
         val query: String = "",
-        val items: List<Hit> = emptyList(),
+        val itemsPaginatedFlow: Flow<PagingData<Hit>> = emptyFlow()
     )
 }

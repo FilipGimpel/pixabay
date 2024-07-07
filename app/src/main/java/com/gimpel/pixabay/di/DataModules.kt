@@ -43,12 +43,12 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context.applicationContext,
             PixabayDatabase::class.java,
-            "Tasks.db"
+            "Pixabay.db"
         ).build()
     }
 
     @Provides
-    fun provideTaskDao(database: PixabayDatabase): PixabayDao = database.pixabayDao()
+    fun providePixabayDao(database: PixabayDatabase): PixabayDao = database.pixabayDao()
 }
 
 @Module

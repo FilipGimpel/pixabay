@@ -45,7 +45,7 @@ class DefaultPixabayService @Inject constructor(
         .build()
         .create(PixabayService::class.java)
 
-    override suspend fun get(searchQuery: String?): Result<PixabayResponse> {
-        return pixabayApi.get(searchQuery)
+    override suspend fun get(searchQuery: String?, page: Int, perPage: Int): Result<PixabayResponse> {
+        return pixabayApi.get(searchQuery, page, perPage)
     }
 }
