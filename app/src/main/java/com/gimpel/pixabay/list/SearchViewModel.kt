@@ -34,7 +34,9 @@ class SearchViewModel @Inject constructor(
             .collect { query ->
                 if (query.trim().isNotEmpty()) {
                     var currentUiState = mutableUiState.value
-                    mutableUiState.value = currentUiState.copy(itemsPaginatedFlow = repository.getSearchResultStream(query).cachedIn(viewModelScope))
+                    mutableUiState.value = currentUiState.copy(
+                        itemsPaginatedFlow = repository.getSearchResultStream(query).cachedIn(viewModelScope)
+                    )
                 }
             }
         }

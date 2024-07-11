@@ -7,6 +7,7 @@ import com.gimpel.pixabay.detail.DetailViewModel
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
@@ -21,7 +22,7 @@ class DetailViewModelTest {
     private val fakeId = 1
 
     @Test
-    fun `should fetch details on initialization`() = kotlinx.coroutines.test.runTest {
+    fun `should fetch details on initialization`() = runTest {
         // given
         every { savedState.get<Int>(DETAIL_ID_ARG) } returns fakeId
 
