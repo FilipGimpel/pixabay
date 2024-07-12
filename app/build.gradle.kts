@@ -90,10 +90,11 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
-    implementation(libs.retrofit.adapters.result)
-
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
+
+    implementation(libs.arrow.core)
+    implementation(libs.retrofit.adapters.arrow)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk.android)

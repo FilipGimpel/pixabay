@@ -1,8 +1,8 @@
 package com.gimpel.pixabay.data.network
 
+import arrow.core.Either
 import retrofit2.http.GET
 import retrofit2.http.Query
-
 
 interface PixabayService {
     @GET("api")
@@ -10,5 +10,5 @@ interface PixabayService {
         @Query("q") searchQuery: String?,
         @Query("page") page: Int = 1,
         @Query("per_page") perPage: Int = 20,
-    ): Result<PixabayResponse>
+    ): Either<Throwable, PixabayResponse>
 }

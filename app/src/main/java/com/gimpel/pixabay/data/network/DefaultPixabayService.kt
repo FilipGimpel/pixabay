@@ -1,7 +1,7 @@
 package com.gimpel.pixabay.data.network
 
+import arrow.core.Either
 import com.gimpel.pixabay.BuildConfig
-import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -9,6 +9,7 @@ import retrofit2.Converter
 import retrofit2.Retrofit
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.skydoves.retrofit.adapters.arrow.EitherCallAdapterFactory
 
 
 @Singleton
@@ -41,11 +42,11 @@ class DefaultPixabayService @Inject constructor(
         .baseUrl(BuildConfig.PIXABAY_API_URL)
         .client(client)
         .addConverterFactory(converterFactory)
-        .addCallAdapterFactory(ResultCallAdapterFactory.create())
+        .addCallAdapterFactory(EitherCallAdapterFactory.create())
         .build()
         .create(PixabayService::class.java)
 
-    override suspend fun get(searchQuery: String?, page: Int, perPage: Int): Result<PixabayResponse> {
+    override suspend fun get(searchQuery: String?, page: Int, perPage: Int): Either<Throwable, PixabayResponse> {
         return pixabayApi.get(searchQuery, page, perPage)
     }
 }

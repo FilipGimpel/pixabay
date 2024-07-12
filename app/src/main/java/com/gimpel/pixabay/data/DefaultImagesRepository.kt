@@ -1,5 +1,7 @@
 package com.gimpel.pixabay.data
 
+import arrow.core.Either
+import arrow.core.right
 import com.gimpel.pixabay.data.local.HitAndTagCrossRef
 import com.gimpel.pixabay.data.local.PixabayDao
 import com.gimpel.pixabay.data.local.SearchQueryWithHitEntity
@@ -15,40 +17,32 @@ class DefaultImagesRepository @Inject constructor(
     private val networkDataSource: PixabayService,
     private val localDataSource: PixabayDao
 ) : ImagesRepository {
-    override suspend fun getHits(query: String, page: Int, perPage: Int): Result<List<Hit>> {
-        var hits = localDataSource.getHitsWithTagsForQuery(query, perPage, (page-1) * perPage).toHit()
+    override suspend fun getHits(query: String, page: Int, perPage: Int): Either<Throwable, List<Hit>> {
+        val localHits = localDataSource.getHitsWithTagsForQueryPaged(query, perPage, page).toHit()
 
-        // If local data is empty, fetch from network
-        if (hits.isEmpty()) {
-            val networkResult = networkDataSource.get(query, page, perPage)
+        return if (localHits.isNotEmpty()) localHits.sortedBy { it.id }.right()
+            else {
+            when (val networkResult = networkDataSource.get(query, page, perPage)) { // todo fold?
+                    is Either.Left -> networkResult
+                    is Either.Right -> {
+                        // Insert hits into local database
+                        insertAll(networkResult.value.hits, query)
 
-            // If network request fails, return error
-            if (networkResult.isFailure) {
-                return Result.failure(networkResult.exceptionOrNull()!!)
-            } else {
-                // Convert network hits to local hits
-                val networkHits = networkResult.getOrNull()!!.hits
-
-                // Insert hits into local database
-                insertAll(networkHits, query)
-
-                // Convert network hits to model
-                hits = networkHits.map { it.toModel() }
+                        // Convert network hits to model
+                        networkResult.value.hits.map { it.toModel() }.right()
+                    }
+                }
             }
-        }
-
-        return Result.success(hits.sortedBy { it.id })
     }
-
 
     private suspend fun insertAll(hits: List<HitDTO>, query: String) {
         // Insert Hits
-        var hitEntities = hits.map { it.toEntity() }
+        val hitEntities = hits.map { it.toEntity() }
         localDataSource.insertAll(hitEntities)
 
         // Insert SearchQueryWithHitEntity
         // One to many relationship between SearchQuery and Hit
-        var hitWithSearchQueryEntities = hits.map { hit ->
+        val hitWithSearchQueryEntities = hits.map { hit ->
             SearchQueryWithHitEntity(hitId = hit.id, searchQuery = query)
         }
         localDataSource.insertQueryWithHit(hitWithSearchQueryEntities)

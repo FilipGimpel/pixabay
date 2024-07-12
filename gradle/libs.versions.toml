@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.0"
+arrowCore = "1.2.4"
 coilCompose = "2.6.0"
 converterKotlinxSerialization = "2.11.0"
 kotlin = "1.9.0"
@@ -20,6 +21,7 @@ pagingCompose = "3.3.0"
 retrofit = "2.9.0"
 androidxHiltNavigationCompose = "1.2.0"
 kotlinxSerializationJson = "1.6.3"
+retrofitAdaptersArrow = "1.0.11"
 retrofitAdaptersResult = "1.0.11"
 roomKtx = "2.6.1"
 ksp = "1.9.0-1.0.13"
@@ -35,6 +37,7 @@ lifecycleRuntimeComposeAndroid = "2.8.1"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
 androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "pagingCompose" }
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowCore" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-kotlinx-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "converterKotlinxSerialization" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -64,7 +67,7 @@ okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor",
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomKtx" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomKtx" }
-retrofit-adapters-result = { module = "com.github.skydoves:retrofit-adapters-result", version.ref = "retrofitAdaptersResult" }
+retrofit-adapters-arrow = { module = "com.github.skydoves:retrofit-adapters-arrow", version.ref = "retrofitAdaptersArrow" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

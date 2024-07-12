@@ -2,6 +2,7 @@ package com.gimpel.pixabay.data
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import arrow.core.Either
 import com.gimpel.pixabay.model.Hit
 
 private const val STARTING_PAGE_INDEX = 1
@@ -13,16 +14,16 @@ class HitPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Hit> {
         val page = params.key ?: STARTING_PAGE_INDEX
-        return try {
-            val response = repository.getHits(query, page, params.loadSize)
-            val hits = response.getOrNull()!!
-            LoadResult.Page(
-                data = hits,
-                prevKey = if (page == STARTING_PAGE_INDEX) null else page - 1,
-                nextKey = if (hits.isEmpty()) null else page + 1
-            )
-        } catch (exception: Exception) {
-            LoadResult.Error(exception)
+
+        return when (val result = repository.getHits(query, page, params.loadSize)) {
+            is Either.Left ->
+                LoadResult.Error(result.value)
+            is Either.Right ->
+                LoadResult.Page(
+                    data = result.value,
+                    prevKey = if (page == STARTING_PAGE_INDEX) null else page - 1,
+                    nextKey = if (result.value.isEmpty()) null else page + 1
+                )
         }
     }
 
