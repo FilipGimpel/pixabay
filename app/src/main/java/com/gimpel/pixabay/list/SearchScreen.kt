@@ -1,6 +1,5 @@
 package com.gimpel.pixabay.list
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,22 +18,18 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
 import coil.compose.rememberAsyncImagePainter
 import com.gimpel.pixabay.R
 import com.gimpel.pixabay.model.Hit
@@ -45,82 +39,59 @@ import com.gimpel.pixabay.model.Hit
 fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
-    onItemClick: (Int) -> Unit
+    onHitClick: (Int) -> Unit
 ) {
-    var clickedItemId by rememberSaveable { mutableStateOf<Int?>(null) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val lazyPagingItems: LazyPagingItems<Hit> =
-        uiState.itemsPaginatedFlow.collectAsLazyPagingItems()
+    val lazyPagingItems: LazyPagingItems<Hit> = uiState.itemsPaginatedFlow.collectAsLazyPagingItems()
 
+    SearchScreen(
+        modifier = modifier,
+        uiState = uiState,
+        lazyPagingItems = lazyPagingItems,
+        onHitClick = onHitClick,
+        onUpdateQuery = viewModel::updateQuery,
+        onDialogShow = viewModel::showDialog,
+        onDialogDismiss = viewModel::hideDialog,
+        onSetLastClickedItemId = viewModel::setLastClickedItemId,
+        onGetLastClickedItemId = viewModel::getLastClickedItemId
+    )
+}
+
+@Composable
+fun SearchScreen(
+    modifier: Modifier = Modifier,
+    uiState: SearchViewModel.UiState,
+    lazyPagingItems: LazyPagingItems<Hit>,
+    onHitClick: (Int) -> Unit = {},
+    onUpdateQuery: (String) -> Unit = {},
+    onDialogShow: () -> Unit = {},
+    onDialogDismiss: () -> Unit = {},
+    onSetLastClickedItemId: (Int) -> Unit = {},
+    onGetLastClickedItemId: () -> Int? = { null },
+) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TextField(
-                modifier = modifier.fillMaxWidth(),
-                singleLine = true,
-                value = uiState.query,
-                onValueChange = { newQuery -> viewModel.updateQuery(newQuery) },
-                label = { Text(text = stringResource(id = R.string.placeholder_search)) }
+            SearchBar(
+                query = uiState.query,
+                onUpdateQuery = onUpdateQuery
             )
 
-            LazyColumn {
-                if (
-                    lazyPagingItems.loadState.isIdle &&
-                    lazyPagingItems.itemCount == 0 &&
-                    uiState.query.isNotEmpty()) {
-                    item {
-                        TextLabel(text = stringResource(id = R.string.no_results))
-                    }
-                } else if (lazyPagingItems.loadState.refresh is LoadState.Error) {
-                    item {
-                        TextLabel(text = stringResource(id = R.string.error_occurred))
-                    }
-                } else if (lazyPagingItems.loadState.refresh is LoadState.Loading && uiState.query.isNotEmpty()) {
-                    item {
-                        LoadingView(Modifier.padding(vertical = 16.dp))
-                    }
-                } else if (lazyPagingItems.loadState.refresh is LoadState.NotLoading) {
-                    items(
-                        count = lazyPagingItems.itemCount,
-                    ) { index ->
-                        val hit = lazyPagingItems[index] ?: return@items
-                        SearchResultItem(
-                            hit = hit, onItemClick = {
-                                clickedItemId = hit.id
-                                viewModel.showDialog()
-                            }
-                        )
-                    }
-                }
-
-                if (lazyPagingItems.loadState.append == LoadState.Loading) {
-                    item {
-                        LoadingView()
-                    }
-                }
-            }
+            HitList(
+                query = uiState.query,
+                lazyPagingItems = lazyPagingItems,
+                onSetLastClickedItemId = onSetLastClickedItemId,
+                onDialogShow = onDialogShow
+            )
 
             if (uiState.showDialog) {
-                AlertDialog(
-                    onDismissRequest = { viewModel.hideDialog() },
-                    title = { Text(text = stringResource(id = R.string.dialog_title)) },
-                    text = { Text(text = stringResource(id = R.string.dialog_text)) },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            viewModel.hideDialog()
-                            clickedItemId?.let { id -> onItemClick(id) }
-                        }) {
-                            Text(text = stringResource(id = R.string.yes))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { viewModel.hideDialog() }) {
-                            Text(text = stringResource(id = R.string.no))
-                        }
-                    }
+                ShowDetailsDialog(
+                    onDialogDismiss = onDialogDismiss,
+                    onGetLastClickedItemId = onGetLastClickedItemId,
+                    onHitClick = onHitClick
                 )
             }
         }
@@ -128,9 +99,111 @@ fun SearchScreen(
 }
 
 @Composable
-fun LoadingView(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
+fun ShowDetailsDialog(
+    onDialogDismiss: () -> Unit,
+    onGetLastClickedItemId: () -> Int?,
+    onHitClick: (Int) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = { onDialogDismiss() },
+        title = { Text(text = stringResource(id = R.string.dialog_title)) },
+        text = { Text(text = stringResource(id = R.string.dialog_text)) },
+        confirmButton = {
+            TextButton(onClick = {
+                onDialogDismiss()
+                onGetLastClickedItemId()?.let { id -> onHitClick(id) }
+            }) {
+                Text(text = stringResource(id = R.string.yes))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDialogDismiss() }) {
+                Text(text = stringResource(id = R.string.no))
+            }
+        }
+    )
+}
+
+@Composable
+fun HitList(
+    query: String,
+    lazyPagingItems: LazyPagingItems<Hit>,
+    onSetLastClickedItemId: (Int) -> Unit,
+    onDialogShow: () -> Unit,
+) {
+    LazyColumn(modifier = Modifier.testTag(SearchScreenTestTags.List)) {
+        when {
+            noResultsAvailableForQuery(lazyPagingItems, query) -> item {
+                TextLabel(text = stringResource(id = R.string.no_results))
+            }
+            isRefreshError(lazyPagingItems) -> item {
+                TextLabel(text = stringResource(id = R.string.error_occurred))
+            }
+            isLoadingResultsForQuery(lazyPagingItems, query) -> item {
+                LoadingView(testTag = SearchScreenTestTags.LoadingIndicator)
+            }
+            resultsAvailableForQuery(lazyPagingItems, query) -> items(
+                count = lazyPagingItems.itemCount,
+            ) { index ->
+                val hit = lazyPagingItems[index] ?: return@items
+                SearchResultItem(
+                    hit = hit, onItemClick = {
+                        onSetLastClickedItemId(hit.id)
+                        onDialogShow()
+                    }
+                )
+            }
+        }
+
+        if (isLoadingResultsAtTheEnd(lazyPagingItems)) {
+            item {
+                LoadingView(testTag = SearchScreenTestTags.AppendingIndicator)
+            }
+        }
+
+    }
+}
+
+fun noResultsAvailableForQuery(lazyPagingItems: LazyPagingItems<*>, query: String): Boolean =
+    lazyPagingItems.loadState.isIdle &&
+    lazyPagingItems.itemCount == 0 &&
+    query.isNotEmpty()
+
+fun isRefreshError(lazyPagingItems: LazyPagingItems<*>): Boolean =
+    lazyPagingItems.loadState.refresh is LoadState.Error
+
+fun isLoadingResultsForQuery(lazyPagingItems: LazyPagingItems<*>, query: String): Boolean =
+    lazyPagingItems.loadState.refresh is LoadState.Loading && query.isNotEmpty()
+
+fun resultsAvailableForQuery(lazyPagingItems: LazyPagingItems<*>, query: String): Boolean =
+    lazyPagingItems.loadState.refresh is LoadState.NotLoading && query.isNotEmpty()
+
+fun isLoadingResultsAtTheEnd(lazyPagingItems: LazyPagingItems<*>): Boolean =
+    lazyPagingItems.loadState.append is LoadState.Loading
+
+@Composable
+fun SearchBar(
+    query: String,
+    onUpdateQuery: (String) -> Unit,
+) {
+    TextField(
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+        value = query,
+        onValueChange = onUpdateQuery,
+        label = { Text(text = stringResource(id = R.string.placeholder_search)) }
+    )
+}
+
+@Composable
+fun LoadingView(
+    modifier: Modifier = Modifier,
+    testTag: String = ""
+) {
+    Box(modifier = modifier.fillMaxSize().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(
+            modifier = Modifier.testTag(testTag)
+        )
     }
 }
 
@@ -152,6 +225,7 @@ fun SearchResultItem(hit: Hit, onItemClick: () -> Unit) {
             .clickable(enabled = true, onClick = onItemClick)
             .fillMaxWidth()
             .padding(16.dp)
+            .testTag(SearchScreenTestTags.ListItem)
     ) {
         Image(
             painter = rememberAsyncImagePainter(model = hit.previewURL),
@@ -168,4 +242,11 @@ fun SearchResultItem(hit: Hit, onItemClick: () -> Unit) {
             Text(text = hit.tags.joinToString(separator = ", "))
         }
     }
+}
+
+object SearchScreenTestTags {
+    const val LoadingIndicator = "LoadingIndicator"
+    const val AppendingIndicator = "AppendingIndicator"
+    const val List = "List"
+    const val ListItem = "ListItem"
 }

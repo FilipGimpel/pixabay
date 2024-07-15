@@ -22,13 +22,13 @@ class DefaultImagesRepositoryTest {
     private val repository = DefaultImagesRepository(networkDataSource, localDataSource)
 
     private val mockHitEntity = HitEntity(
-        1,
-        "previewURL",
-        "user",
-        "largeImageURL",
-        1,
-        1,
-        1
+        -1,
+        "",
+        "",
+        "",
+        0,
+        0,
+        0
     )
     private val nonEmptyList = listOf(HitWithTags(mockHitEntity, emptyList()))
 

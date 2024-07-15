@@ -29,7 +29,7 @@ fun PixabayNavGraph(
         ) {
             SearchScreen(
                 modifier = modifier,
-                onItemClick = { id -> navController.navigate("$DETAIL_SCREEN/$id") }
+                onHitClick = { id -> navController.navigate("$DETAIL_SCREEN/$id") }
             )
         }
         composable(

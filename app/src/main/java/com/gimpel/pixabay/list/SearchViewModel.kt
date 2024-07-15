@@ -23,8 +23,11 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val repository: HitRepository
 ) : ViewModel() {
+
     private val mutableUiState = MutableStateFlow(UiState())
     val uiState = mutableUiState.asStateFlow()
+
+    private var clickedItemId: Int? = null
 
     init {
         viewModelScope.launch {
@@ -40,6 +43,14 @@ class SearchViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun setLastClickedItemId(itemId: Int) {
+        clickedItemId = itemId
+    }
+
+    fun getLastClickedItemId(): Int? {
+        return clickedItemId
     }
 
     fun showDialog() {
