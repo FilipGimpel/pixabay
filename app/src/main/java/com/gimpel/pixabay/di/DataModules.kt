@@ -2,12 +2,12 @@ package com.gimpel.pixabay.di
 
 import android.content.Context
 import androidx.room.Room
-import com.gimpel.pixabay.data.DefaultImagesRepository
-import com.gimpel.pixabay.data.ImagesRepository
-import com.gimpel.pixabay.data.local.PixabayDao
-import com.gimpel.pixabay.data.local.PixabayDatabase
-import com.gimpel.pixabay.data.network.DefaultPixabayService
-import com.gimpel.pixabay.data.network.PixabayService
+import com.gimpel.pixabay.search.data.DefaultImagesRepository
+import com.gimpel.pixabay.search.domain.repository.ImagesRepository
+import com.gimpel.pixabay.search.data.local.PixabayDao
+import com.gimpel.pixabay.search.data.local.PixabayDatabase
+import com.gimpel.pixabay.search.data.network.DefaultPixabayService
+import com.gimpel.pixabay.search.data.network.PixabayService
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

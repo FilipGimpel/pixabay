@@ -1,7 +1,7 @@
 package com.gimpel.pixabay
 
-import com.gimpel.pixabay.data.HitRepository
-import com.gimpel.pixabay.list.SearchViewModel
+import com.gimpel.pixabay.search.data.HitRepository
+import com.gimpel.pixabay.search.presentation.viewmodel.SearchViewModel
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
@@ -19,7 +19,7 @@ class SearchViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val repository = mockk<HitRepository>(relaxed = true)
+    private val repository = mockk<com.gimpel.pixabay.search.data.HitRepository>(relaxed = true)
 
     private val query = "query"
     private val differentQuery = "differentQuery"
@@ -28,7 +28,7 @@ class SearchViewModelTest {
     @Test
     fun `should fetch results on query change`() = runTest {
         // when
-        SearchViewModel(repository).updateQuery(query)
+        com.gimpel.pixabay.search.presentation.viewmodel.SearchViewModel(repository).updateQuery(query)
 
         advanceUntilIdle()
 
@@ -38,7 +38,7 @@ class SearchViewModelTest {
 
     @Test
     fun `should collect only distinct queries`() = runTest {
-        val viewModel = SearchViewModel(repository)
+        val viewModel = com.gimpel.pixabay.search.presentation.viewmodel.SearchViewModel(repository)
 
         // when
         viewModel.updateQuery(query)
@@ -53,7 +53,7 @@ class SearchViewModelTest {
 
     @Test
     fun `should throttle collection of queries`() = runTest {
-        val viewModel = SearchViewModel(repository)
+        val viewModel = com.gimpel.pixabay.search.presentation.viewmodel.SearchViewModel(repository)
 
         // when
         viewModel.updateQuery(query)

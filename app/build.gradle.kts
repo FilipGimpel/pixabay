@@ -1,4 +1,3 @@
-import com.android.kotlin.multiplatform.ide.models.serialization.androidTargetKey
 import java.util.Properties
 
 plugins {
@@ -9,12 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val apikeyPropertiesFile = rootProject.file("apikey.properties")
-val apiKeyProperties = Properties().apply {
-    load(apikeyPropertiesFile.inputStream())
-}
-
-android.buildFeatures.buildConfig = true
+android.buildFeatures.buildConfig = true // TODO it might not be necessary now that CONSTANTS are in search:data module
 
 android {
     namespace = "com.gimpel.pixabay"
@@ -31,9 +25,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        buildConfigField("String", "PIXABAY_API_KEY", apiKeyProperties.getProperty("pixabay.api.key"))
-        buildConfigField("String", "PIXABAY_API_URL", "\"https://pixabay.com/\"")
     }
 
     buildTypes {
@@ -49,6 +40,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    // todo remove this
     buildFeatures {
         compose = true
     }
@@ -62,9 +54,13 @@ android {
             merges += "META-INF/LICENSE-notice.md"
         }
     }
+    // todo remove this
 }
 
 dependencies {
+    implementation(project(":search:data"))
+    implementation(project(":search:domain"))
+    implementation(project(":search:presentation"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

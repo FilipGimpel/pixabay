@@ -14,9 +14,9 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.gimpel.pixabay.R
-import com.gimpel.pixabay.list.HitList
-import com.gimpel.pixabay.list.SearchScreenTestTags
-import com.gimpel.pixabay.model.Hit
+import com.gimpel.pixabay.search.presentation.ui.HitList
+import com.gimpel.pixabay.search.presentation.ui.SearchScreenTestTags
+import com.gimpel.pixabay.search.domain.model.Hit
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule
@@ -30,7 +30,7 @@ class HitListComposeTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private val mockHit = Hit(
+    private val mockHit = com.gimpel.pixabay.search.domain.model.Hit(
         id = -1,
         previewURL = "",
         tags = emptyList(),
@@ -44,7 +44,7 @@ class HitListComposeTest {
     @Test
     fun should_be_idle_on_start() {
         // given
-        val items = mockk<LazyPagingItems<Hit>> {
+        val items = mockk<LazyPagingItems<com.gimpel.pixabay.search.domain.model.Hit>> {
             every { itemCount } returns 0
             every { loadState.isIdle } returns true
             every { loadState.refresh } returns LoadState.NotLoading(false)
@@ -63,7 +63,7 @@ class HitListComposeTest {
     @Test
     fun should_show_loading_when_loading() {
         // given
-        val items = mockk<LazyPagingItems<Hit>> {
+        val items = mockk<LazyPagingItems<com.gimpel.pixabay.search.domain.model.Hit>> {
             every { itemCount } returns 0
             every { loadState.isIdle } returns false
             every { loadState.refresh } returns LoadState.Loading
@@ -76,7 +76,7 @@ class HitListComposeTest {
         startHitList(items, searchQuery)
 
         // then
-        composeTestRule.onNodeWithTag(SearchScreenTestTags.LoadingIndicator).assertExists()
+        composeTestRule.onNodeWithTag(com.gimpel.pixabay.search.presentation.ui.SearchScreenTestTags.LoadingIndicator).assertExists()
     }
 
     @Test
@@ -84,7 +84,7 @@ class HitListComposeTest {
         // given
         val itemsCount = 10
 
-        val items = mockk<LazyPagingItems<Hit>> {
+        val items = mockk<LazyPagingItems<com.gimpel.pixabay.search.domain.model.Hit>> {
             every { itemCount } returns itemsCount
             every { loadState.isIdle } returns true
             every { loadState.refresh } returns LoadState.NotLoading(false)
@@ -99,7 +99,7 @@ class HitListComposeTest {
         startHitList(items, searchQuery)
 
         // then
-        composeTestRule.onAllNodesWithTag(SearchScreenTestTags.ListItem).assertCountEquals(itemsCount)
+        composeTestRule.onAllNodesWithTag(com.gimpel.pixabay.search.presentation.ui.SearchScreenTestTags.ListItem).assertCountEquals(itemsCount)
     }
 
     @Test
@@ -107,7 +107,7 @@ class HitListComposeTest {
         // given
         val itemsCount = 10
 
-        val items = mockk<LazyPagingItems<Hit>> {
+        val items = mockk<LazyPagingItems<com.gimpel.pixabay.search.domain.model.Hit>> {
             every { itemCount } returns itemsCount
             every { loadState.isIdle } returns true
             every { loadState.refresh } returns LoadState.NotLoading(false)
@@ -120,12 +120,12 @@ class HitListComposeTest {
 
         // when
         startHitList(items, searchQuery)
-        composeTestRule.onNodeWithTag(SearchScreenTestTags.List)
+        composeTestRule.onNodeWithTag(com.gimpel.pixabay.search.presentation.ui.SearchScreenTestTags.List)
             .performScrollToIndex(itemsCount)
 
         // then
-        composeTestRule.onAllNodesWithTag(SearchScreenTestTags.ListItem).assertCountEquals(itemsCount)
-        composeTestRule.onNodeWithTag(SearchScreenTestTags.AppendingIndicator).assertExists()
+        composeTestRule.onAllNodesWithTag(com.gimpel.pixabay.search.presentation.ui.SearchScreenTestTags.ListItem).assertCountEquals(itemsCount)
+        composeTestRule.onNodeWithTag(com.gimpel.pixabay.search.presentation.ui.SearchScreenTestTags.AppendingIndicator).assertExists()
     }
 
     @Test
@@ -133,7 +133,7 @@ class HitListComposeTest {
         // given
         val itemsCount = 0
 
-        val items = mockk<LazyPagingItems<Hit>> {
+        val items = mockk<LazyPagingItems<com.gimpel.pixabay.search.domain.model.Hit>> {
             every { itemCount } returns itemsCount
             every { loadState.isIdle } returns true
             every { loadState.refresh } returns LoadState.NotLoading(false)
@@ -146,18 +146,18 @@ class HitListComposeTest {
 
         // when
         startHitList(items, searchQuery)
-        composeTestRule.onNodeWithTag(SearchScreenTestTags.List)
+        composeTestRule.onNodeWithTag(com.gimpel.pixabay.search.presentation.ui.SearchScreenTestTags.List)
             .performScrollToIndex(itemsCount)
 
         // then
-        composeTestRule.onAllNodesWithTag(SearchScreenTestTags.ListItem).assertCountEquals(itemsCount)
+        composeTestRule.onAllNodesWithTag(com.gimpel.pixabay.search.presentation.ui.SearchScreenTestTags.ListItem).assertCountEquals(itemsCount)
         composeTestRule.onNodeWithText(getString(R.string.no_results)).assertExists()
     }
 
     @Test
     fun should_show_error_on_error() {
         // given
-        val items = mockk<LazyPagingItems<Hit>> {
+        val items = mockk<LazyPagingItems<com.gimpel.pixabay.search.domain.model.Hit>> {
             every { itemCount } returns 0
             every { loadState.isIdle } returns false
             every { loadState.refresh } returns LoadState.Error(Exception())
@@ -173,9 +173,9 @@ class HitListComposeTest {
         composeTestRule.onNodeWithText(getString(R.string.error_occurred)).assertExists()
     }
 
-    private fun startHitList(items: LazyPagingItems<Hit>, searchQuery: String) {
+    private fun startHitList(items: LazyPagingItems<com.gimpel.pixabay.search.domain.model.Hit>, searchQuery: String) {
         composeTestRule.setContent {
-            HitList(
+            com.gimpel.pixabay.search.presentation.ui.HitList(
                 lazyPagingItems = items,
                 query = searchQuery,
                 onSetLastClickedItemId = {},

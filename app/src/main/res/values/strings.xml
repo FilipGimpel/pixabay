@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">pixabay</string>
-    <string name="dialog_title">Hey there</string>
-    <string name="dialog_text">Want to see more?</string>
-    <string name="placeholder_search">Search</string>
-    <string name="no_results">No results</string>
-    <string name="error_occurred">Error occurred</string>
-    <string name="no">no</string>
-    <string name="yes">yes</string>
+<!--    <string name="app_name">pixabay</string>-->
+<!--    <string name="dialog_title">Hey there</string>-->
+<!--    <string name="dialog_text">Want to see more?</string>-->
+<!--    <string name="placeholder_search">Search</string>-->
+<!--    <string name="no_results">No results</string>-->
+<!--    <string name="error_occurred">Error occurred</string>-->
+<!--    <string name="no">no</string>-->
+<!--    <string name="yes">yes</string>-->
 </resources>

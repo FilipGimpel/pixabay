@@ -1,16 +1,12 @@
 package com.gimpel.pixabay
 
-import com.gimpel.pixabay.PixabayDestinationsArgs.DETAIL_ID_ARG
 import com.gimpel.pixabay.PixabayScreens.DETAIL_SCREEN
 import com.gimpel.pixabay.PixabayScreens.SEARCH_SCREEN
+import com.gimpel.pixabay.search.presentation.ui.DetailScreenNavArgs.DETAIL_ID_ARG
 
 object PixabayScreens {
     const val SEARCH_SCREEN = "list"
     const val DETAIL_SCREEN = "detail"
-}
-
-object PixabayDestinationsArgs {
-    const val DETAIL_ID_ARG = "imageId"
 }
 
 object PixabayDestinations {

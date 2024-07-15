@@ -1,10 +1,10 @@
 package com.gimpel.pixabay
 
-import com.gimpel.pixabay.data.DefaultImagesRepository
-import com.gimpel.pixabay.data.local.HitEntity
-import com.gimpel.pixabay.data.local.HitWithTags
-import com.gimpel.pixabay.data.local.PixabayDao
-import com.gimpel.pixabay.data.network.PixabayService
+import com.gimpel.pixabay.search.data.DefaultImagesRepository
+import com.gimpel.pixabay.search.data.local.HitEntity
+import com.gimpel.pixabay.search.data.local.HitWithTags
+import com.gimpel.pixabay.search.data.local.PixabayDao
+import com.gimpel.pixabay.search.data.network.PixabayService
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -16,12 +16,12 @@ class DefaultImagesRepositoryTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val networkDataSource: PixabayService = mockk(relaxed = true)
-    private val localDataSource: PixabayDao = mockk(relaxed = true)
+    private val networkDataSource: com.gimpel.pixabay.search.data.network.PixabayService = mockk(relaxed = true)
+    private val localDataSource: com.gimpel.pixabay.search.data.local.PixabayDao = mockk(relaxed = true)
 
-    private val repository = DefaultImagesRepository(networkDataSource, localDataSource)
+    private val repository = com.gimpel.pixabay.search.data.DefaultImagesRepository(networkDataSource, localDataSource)
 
-    private val mockHitEntity = HitEntity(
+    private val mockHitEntity = com.gimpel.pixabay.search.data.local.HitEntity(
         -1,
         "",
         "",
@@ -30,7 +30,7 @@ class DefaultImagesRepositoryTest {
         0,
         0
     )
-    private val nonEmptyList = listOf(HitWithTags(mockHitEntity, emptyList()))
+    private val nonEmptyList = listOf(com.gimpel.pixabay.search.data.local.HitWithTags(mockHitEntity, emptyList()))
 
 
     @Test

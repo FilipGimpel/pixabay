@@ -8,10 +8,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.gimpel.pixabay.PixabayDestinationsArgs.DETAIL_ID_ARG
 import com.gimpel.pixabay.PixabayScreens.DETAIL_SCREEN
-import com.gimpel.pixabay.detail.DetailScreen
-import com.gimpel.pixabay.list.SearchScreen
+import com.gimpel.pixabay.search.presentation.ui.DetailScreenNavArgs.DETAIL_ID_ARG
+import com.gimpel.pixabay.search.presentation.ui.SearchScreen
 
 @Composable
 fun PixabayNavGraph(
@@ -36,7 +35,7 @@ fun PixabayNavGraph(
             PixabayDestinations.DETAIL_ROUTE,
             arguments = listOf(navArgument(DETAIL_ID_ARG) { type = NavType.IntType })
         ) {
-            DetailScreen()
+            com.gimpel.pixabay.search.presentation.ui.DetailScreen()
         }
     }
 }
