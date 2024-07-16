@@ -1,6 +1,7 @@
 package com.gimpel.pixabay.search.data
 
 import com.gimpel.pixabay.search.data.local.HitEntity
+import com.gimpel.pixabay.search.data.local.HitWithTags
 import com.gimpel.pixabay.search.data.network.HitDTO
 import com.gimpel.pixabay.search.domain.model.Hit
 
@@ -16,7 +17,7 @@ fun HitDTO.toEntity(): HitEntity {
     )
 }
 
-fun HitDTO.toModel(): Hit {
+fun HitDTO.toHit(): Hit {
     return Hit(
         id = this.id,
         previewURL = this.previewURL,
@@ -29,7 +30,19 @@ fun HitDTO.toModel(): Hit {
     )
 }
 
-fun com.gimpel.pixabay.search.data.local.HitWithTags.toHit(): Hit {
+fun Hit.toEntity() : HitEntity {
+    return HitEntity(
+        hitId = this.id,
+        previewURL = this.previewURL,
+        user = this.user,
+        largeImageURL = this.largeImageURL,
+        likes = this.likes,
+        downloads = this.downloads,
+        comments = this.comments
+    )
+}
+
+fun HitWithTags.toHit(): Hit {
     return Hit(
         id = this.hit.hitId,
         previewURL = this.hit.previewURL,
@@ -46,4 +59,10 @@ fun com.gimpel.pixabay.search.data.local.HitWithTags.toHit(): Hit {
 // Without this, type erasure will cause compiler errors because these methods will have the same
 // signature on the JVM.
 @JvmName("HitWithTagToModel")
-fun List<com.gimpel.pixabay.search.data.local.HitWithTags>.toHit() = map(com.gimpel.pixabay.search.data.local.HitWithTags::toHit)
+fun List<HitWithTags>.toHit() = map(HitWithTags::toHit)
+
+@JvmName("HitDTOToModel")
+fun List<HitDTO>.toHit() = map(HitDTO::toHit)
+
+@JvmName("HitToEntity")
+fun List<Hit>.toEntity() = map(Hit::toEntity)

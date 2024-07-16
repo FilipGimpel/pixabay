@@ -10,12 +10,12 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ObserveQueryResults @Inject constructor(
-    private val service: ImagesRepository
+    private val imagesRepository: ImagesRepository
 ) {
     operator fun invoke(query: String) : Flow<PagingData<Hit>> {
         return Pager(
             config = PagingConfig(enablePlaceholders = false, pageSize = NETWORK_PAGE_SIZE),
-            pagingSourceFactory = { HitPagingSource(service, query) }
+            pagingSourceFactory = { HitPagingSource(imagesRepository, query) }
         ).flow
     }
 

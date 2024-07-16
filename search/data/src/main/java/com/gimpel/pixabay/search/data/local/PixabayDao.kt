@@ -30,11 +30,9 @@ interface PixabayDao {
         JOIN SearchQueryWithHitEntity ON HitEntity.hitId = SearchQueryWithHitEntity.hitId
         WHERE SearchQueryWithHitEntity.searchQuery = :query
         GROUP BY HitEntity.hitId
+        ORDER BY HitEntity.hitId ASC
         LIMIT :perPage OFFSET :offset
     """
     )
     suspend fun getHitsWithTagsForQuery(query: String, perPage: Int = 20, offset: Int = 0): List<HitWithTags>
-
-    suspend fun getHitsWithTagsForQueryPaged(query: String, perPage: Int = 20, page: Int = 0) =
-        getHitsWithTagsForQuery(query, perPage, (page-1) * perPage)
 }

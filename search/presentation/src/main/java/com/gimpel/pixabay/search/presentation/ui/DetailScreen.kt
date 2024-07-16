@@ -19,11 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import com.gimpel.pixabay.search.presentation.viewmodel.DetailViewModel
 
 
 @Composable
 fun DetailScreen(
-    viewModel: com.gimpel.pixabay.search.presentation.viewmodel.DetailViewModel = hiltViewModel()
+    viewModel: DetailViewModel = hiltViewModel()
 ) {
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

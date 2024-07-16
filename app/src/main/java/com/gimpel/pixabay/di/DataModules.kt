@@ -3,11 +3,15 @@ package com.gimpel.pixabay.di
 import android.content.Context
 import androidx.room.Room
 import com.gimpel.pixabay.search.data.DefaultImagesRepository
+import com.gimpel.pixabay.search.data.local.LocalHitDataSource
+import com.gimpel.pixabay.search.data.local.LocalHitDataSourceImpl
 import com.gimpel.pixabay.search.domain.repository.ImagesRepository
 import com.gimpel.pixabay.search.data.local.PixabayDao
 import com.gimpel.pixabay.search.data.local.PixabayDatabase
 import com.gimpel.pixabay.search.data.network.DefaultPixabayService
 import com.gimpel.pixabay.search.data.network.PixabayService
+import com.gimpel.pixabay.search.data.network.RemoteHitDataSource
+import com.gimpel.pixabay.search.data.network.RemoteHitDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -49,6 +53,19 @@ object DatabaseModule {
 
     @Provides
     fun providePixabayDao(database: PixabayDatabase): PixabayDao = database.pixabayDao()
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class DataSourceModule {
+
+    @Singleton
+    @Binds
+    abstract fun bindLocalHitDataSource(localHitDataSource: LocalHitDataSourceImpl): LocalHitDataSource
+
+    @Singleton
+    @Binds
+    abstract fun bindRemoteHitDataSource(remoteHitDataSource: RemoteHitDataSourceImpl): RemoteHitDataSource
 }
 
 @Module

@@ -15,3 +15,5 @@ Sometimes, the API returns results for a given query that do not contain the que
 ## **Paging**
 
 Pagin is done using jetpack paging library. It uses offline data first, and if nothing is found there, fetches it from web.
+
+The Pixabay API provides two sorting options for its results: the default "popularity" (which does not correspond to likes, views, or any attributes within the Hit object) and "latest" (even though the Hit object lacks a date attribute). To maintain the same order as the API when retrieving records from a database, it's advisable to assign custom IDs that capture the sequence in which the results were received from the API. (TODO)

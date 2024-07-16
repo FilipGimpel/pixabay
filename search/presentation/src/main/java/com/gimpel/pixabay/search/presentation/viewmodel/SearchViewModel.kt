@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.gimpel.pixabay.search.presentation.HitRepository
+import com.gimpel.pixabay.search.domain.model.Hit
+import com.gimpel.pixabay.search.presentation.usecase.ObserveQueryResults
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +21,7 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val repository: HitRepository
+    private val observeQueryResults: ObserveQueryResults
 ) : ViewModel() {
 
     private val mutableUiState = MutableStateFlow(UiState())
@@ -37,7 +38,7 @@ class SearchViewModel @Inject constructor(
                 if (query.trim().isNotEmpty()) {
                     var currentUiState = mutableUiState.value
                     mutableUiState.value = currentUiState.copy(
-                        itemsPaginatedFlow = repository.getSearchResultStream(query).cachedIn(viewModelScope)
+                        itemsPaginatedFlow = observeQueryResults(query).cachedIn(viewModelScope)
                     )
                 }
             }
@@ -70,6 +71,6 @@ class SearchViewModel @Inject constructor(
     data class UiState(
         val showDialog: Boolean = false,
         val query: String = "",
-        val itemsPaginatedFlow: Flow<PagingData<com.gimpel.pixabay.search.domain.model.Hit>> = emptyFlow()
+        val itemsPaginatedFlow: Flow<PagingData<Hit>> = emptyFlow()
     )
 }
