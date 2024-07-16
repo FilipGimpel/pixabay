@@ -30,7 +30,6 @@ android {
 }
 
 dependencies {
-    api(project(":search:hilt"))
     api(project(":search:data"))
     api(project(":search:domain"))
     api(project(":search:presentation"))

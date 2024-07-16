@@ -62,6 +62,9 @@ dependencies {
     implementation(libs.arrow.core)
     implementation(libs.retrofit.adapters.arrow)
 
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.kotlinx.coroutines.test)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

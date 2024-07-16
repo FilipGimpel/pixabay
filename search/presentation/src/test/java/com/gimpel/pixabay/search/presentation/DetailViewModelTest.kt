@@ -1,8 +1,8 @@
-package com.gimpel.pixabay
+package com.gimpel.pixabay.search.presentation
 
 import androidx.lifecycle.SavedStateHandle
-import com.gimpel.pixabay.PixabayDestinationsArgs.DETAIL_ID_ARG
-import com.gimpel.pixabay.search.domain.repository.ImagesRepository
+import com.gimpel.pixabay.search.domain.usecase.GetHit
+import com.gimpel.pixabay.search.presentation.ui.DetailScreenNavArgs.DETAIL_ID_ARG
 import com.gimpel.pixabay.search.presentation.viewmodel.DetailViewModel
 import io.mockk.coVerify
 import io.mockk.every
@@ -17,7 +17,7 @@ class DetailViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val savedState = mockk<SavedStateHandle>()
-    private val imagesRepository = mockk<com.gimpel.pixabay.search.domain.repository.ImagesRepository>(relaxed = true)
+    private val getHit = mockk<GetHit>(relaxed = true)
 
     private val fakeId = 1
 
@@ -27,9 +27,9 @@ class DetailViewModelTest {
         every { savedState.get<Int>(DETAIL_ID_ARG) } returns fakeId
 
         // when
-        com.gimpel.pixabay.search.presentation.viewmodel.DetailViewModel(imagesRepository, savedState)
+        DetailViewModel(getHit, savedState)
 
         // then
-        coVerify { imagesRepository.getHit(fakeId) }
+        coVerify { getHit(fakeId) }
     }
 }

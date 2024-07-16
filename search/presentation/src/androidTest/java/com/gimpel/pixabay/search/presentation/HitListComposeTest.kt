@@ -1,4 +1,4 @@
-package com.gimpel.pixabay.compose
+package com.gimpel.pixabay.search.presentation
 
 import android.app.Application
 import androidx.annotation.StringRes
@@ -13,10 +13,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.gimpel.pixabay.R
-import com.gimpel.pixabay.search.presentation.ui.HitList
-import com.gimpel.pixabay.search.presentation.ui.SearchScreenTestTags
-import com.gimpel.pixabay.search.domain.model.Hit
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Rule

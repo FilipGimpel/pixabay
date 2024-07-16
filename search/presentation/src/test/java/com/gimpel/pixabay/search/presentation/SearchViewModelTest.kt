@@ -1,6 +1,6 @@
-package com.gimpel.pixabay
+package com.gimpel.pixabay.search.presentation
 
-import com.gimpel.pixabay.search.data.HitRepository
+import com.gimpel.pixabay.search.presentation.usecase.ObserveQueryResults
 import com.gimpel.pixabay.search.presentation.viewmodel.SearchViewModel
 import io.mockk.mockk
 import io.mockk.verify
@@ -19,7 +19,7 @@ class SearchViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val repository = mockk<com.gimpel.pixabay.search.data.HitRepository>(relaxed = true)
+    private val observeQueryResults = mockk<ObserveQueryResults>(relaxed = true)
 
     private val query = "query"
     private val differentQuery = "differentQuery"
@@ -28,17 +28,17 @@ class SearchViewModelTest {
     @Test
     fun `should fetch results on query change`() = runTest {
         // when
-        com.gimpel.pixabay.search.presentation.viewmodel.SearchViewModel(repository).updateQuery(query)
+        SearchViewModel(observeQueryResults).updateQuery(query)
 
         advanceUntilIdle()
 
         // then
-        verify { repository.getSearchResultStream(query) }
+        verify { observeQueryResults(query) }
     }
 
     @Test
     fun `should collect only distinct queries`() = runTest {
-        val viewModel = com.gimpel.pixabay.search.presentation.viewmodel.SearchViewModel(repository)
+        val viewModel = SearchViewModel(observeQueryResults)
 
         // when
         viewModel.updateQuery(query)
@@ -48,12 +48,12 @@ class SearchViewModelTest {
         advanceUntilIdle()
 
         // then
-        verify(exactly = 1) { repository.getSearchResultStream(query) }
+        verify(exactly = 1) { observeQueryResults(query) }
     }
 
     @Test
     fun `should throttle collection of queries`() = runTest {
-        val viewModel = com.gimpel.pixabay.search.presentation.viewmodel.SearchViewModel(repository)
+        val viewModel = SearchViewModel(observeQueryResults)
 
         // when
         viewModel.updateQuery(query)
@@ -66,8 +66,8 @@ class SearchViewModelTest {
 
         // then
         verifySequence {
-            repository.getSearchResultStream(differentQuery)
-            repository.getSearchResultStream(anotherQuery)
+            observeQueryResults(differentQuery)
+            observeQueryResults(anotherQuery)
         }
     }
 }

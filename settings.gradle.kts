@@ -22,7 +22,6 @@ dependencyResolutionManagement {
 rootProject.name = "pixabay"
 include(":app")
 include(":search")
-include(":search:hilt")
 include(":search:data")
 include(":search:domain")
 include(":search:presentation")

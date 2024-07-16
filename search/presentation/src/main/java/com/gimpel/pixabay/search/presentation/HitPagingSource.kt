@@ -5,18 +5,20 @@ import androidx.paging.PagingState
 import arrow.core.Either
 import com.gimpel.pixabay.search.domain.model.Hit
 import com.gimpel.pixabay.search.domain.repository.ImagesRepository
+import com.gimpel.pixabay.search.domain.usecase.GetHit
+import com.gimpel.pixabay.search.domain.usecase.GetHits
 
 private const val STARTING_PAGE_INDEX = 1
 
 class HitPagingSource(
-    private val repository: ImagesRepository,
+    private val getHits: GetHits,
     private val query: String
 ) : PagingSource<Int, Hit>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Hit> {
         val page = params.key ?: STARTING_PAGE_INDEX
 
-        return when (val result = repository.getHits(query, page, params.loadSize)) {
+        return when (val result = getHits(query, page, params.loadSize)) {
             is Either.Left ->
                 LoadResult.Error(result.value)
             is Either.Right ->

@@ -1,4 +1,4 @@
-package com.gimpel.pixabay
+package com.gimpel.pixabay.search.data
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestDispatcher
@@ -9,7 +9,7 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 // Reusable JUnit4 TestRule to override the Main dispatcher
-class MainDispatcherRule(
+class MainDispatcherRule( // todo move to test-util module
     val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(),
 ) : TestWatcher() {
     override fun starting(description: Description) {
