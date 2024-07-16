@@ -33,11 +33,4 @@ dependencies {
     api(project(":search:data"))
     api(project(":search:domain"))
     api(project(":search:presentation"))
-
-//    implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.appcompat)
-//    implementation(libs.material)
-//    testImplementation(libs.junit)
-//    androidTestImplementation(libs.androidx.junit)
-//    androidTestImplementation(libs.androidx.espresso.core)
 }

@@ -80,31 +80,31 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.converter.kotlinx.serialization)
-    implementation(libs.okhttp.logging)
-
-    implementation(libs.coil.compose)
+//    implementation(libs.okhttp.logging)
+//
+//    implementation(libs.coil.compose)
 
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+//    implementation(libs.androidx.room.ktx)
+//    ksp(libs.androidx.room.compiler)
+//
+//    implementation(libs.androidx.paging.runtime.ktx)
+//    implementation(libs.androidx.paging.compose)
 
-    implementation(libs.androidx.paging.runtime.ktx)
-    implementation(libs.androidx.paging.compose)
+//    implementation(libs.arrow.core)
+//    implementation(libs.retrofit.adapters.arrow)
 
-    implementation(libs.arrow.core)
-    implementation(libs.retrofit.adapters.arrow)
-
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk.android)
-    testImplementation(libs.mockk.agent)
-    testImplementation(libs.kotlinx.coroutines.test)
-
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    androidTestImplementation(libs.mockk.android)
-
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+//    testImplementation(libs.junit)
+//    testImplementation(libs.mockk.android)
+//    testImplementation(libs.mockk.agent)
+//    testImplementation(libs.kotlinx.coroutines.test)
+//
+//    androidTestImplementation(libs.androidx.junit)
+//    androidTestImplementation(libs.androidx.espresso.core)
+//    androidTestImplementation(platform(libs.androidx.compose.bom))
+//    androidTestImplementation(libs.androidx.ui.test.junit4)
+//    androidTestImplementation(libs.mockk.android)
+//
+//    debugImplementation(libs.androidx.ui.tooling)
+//    debugImplementation(libs.androidx.ui.test.manifest)
 }
